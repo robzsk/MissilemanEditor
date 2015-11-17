@@ -1,32 +1,41 @@
-//TODO: write a cursor manager module
-var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5),
-material = new THREE.MeshLambertMaterial({
-		color : 0x00ff00
-	}),
-cube = new THREE.Mesh(geometry, material),
-mode = type.solid;
+'use strict';
 
-//TODO: move this to a interface module
+var THREE = require('three'),
+	$ = require('jquery'),
+	assets = require('./assets'),
+	editor = require('./editor'),
+	map = require('./map'),
+	type = require('./type');
+
+// TODO: move this to a interface module
 $(document).ready(function () {
+	// TODO: write a cursor manager module
+	var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5),
+		material = new THREE.MeshLambertMaterial({
+			color: 0x00ff00
+		}),
+		cube = new THREE.Mesh(geometry, material),
+		mode = type.solid;
+
 	$('.item').click(function () {
 		$('.item').removeClass('selected');
 		$(this).addClass('selected');
-		
+
 		switch ($(this).index()) {
-		case 1:
-			mode = type.destructible;
-			break;
-		case 2:
-			mode = type.manOnly;
-			break;
-		case 3:
-			mode = type.missileOnly;
-			break;
-		case 4:
-			mode = type.target;
-			break;
-		default:
-			mode = type.solid;
+			case 1:
+				mode = type.destructible;
+				break;
+			case 2:
+				mode = type.manOnly;
+				break;
+			case 3:
+				mode = type.missileOnly;
+				break;
+			case 4:
+				mode = type.target;
+				break;
+			default:
+				mode = type.solid;
 		}
 
 	}).hover(function () {
@@ -34,16 +43,11 @@ $(document).ready(function () {
 	}, function () {
 		$(this).removeClass('hover');
 	});
-});
 
-$(document).ready(function () {
-	'use strict';
-	
 	$(assets).on('assets.loaded', function () {
-
 		var cursor = cube.clone(),
-		ed = editor(),
-		n = 10;
+			ed = editor(),
+			n = 10;
 
 		ed.add(cursor);
 
@@ -73,4 +77,5 @@ $(document).ready(function () {
 		map.initEmpty(n);
 
 	});
+	assets.load();
 });

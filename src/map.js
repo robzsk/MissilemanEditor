@@ -1,9 +1,14 @@
-var map = (function () {
-	'use strict';
+'use strict';
 
+var _ = require('underscore'),
+	$ = require('jquery'),
+	assets = require('./assets'),
+	type = require('./type');
+
+module.exports = function () {
 	var _map,
-	data = [],
-	size;
+		data = [],
+		size;
 
 	var zero = function () {
 		var ret = [];
@@ -12,8 +17,8 @@ var map = (function () {
 			_.times(size, function (x) {
 				var m = assets.empty();
 				ret[y].push({
-					mesh : m,
-					type : type.empty
+					mesh: m,
+					type: type.empty
 				});
 				m.position.set(x, y, 0);
 				$(_map).trigger('map.add', m);
@@ -23,12 +28,12 @@ var map = (function () {
 	};
 
 	_map = {
-		initEmpty : function (s) {
+		initEmpty: function (s) {
 			size = s;
 			data = zero();
 		},
 
-		add : function (v, t) {
+		add: function (v, t) {
 			var d = data[v.y][v.x];
 			d.type = t;
 			if (d.mesh) {
@@ -40,7 +45,7 @@ var map = (function () {
 			$(_map).trigger('map.add', d.mesh);
 		},
 
-		remove : function (v) {
+		remove: function (v) {
 			var d = data[v.y][v.x];
 			if (d.type === type.empty) {
 				return;
@@ -56,4 +61,4 @@ var map = (function () {
 
 	};
 	return _map;
-}());
+}();

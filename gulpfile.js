@@ -2,8 +2,12 @@
 
 var gulp = require('gulp'),
 	source = require('vinyl-source-stream'),
+	buffer = require('vinyl-buffer'),
 	browserify = require('browserify'),
-	browserSync = require('browser-sync').create();
+	uglify = require('gulp-uglify'),
+	sourcemaps = require('gulp-sourcemaps'),
+	browserSync = require('browser-sync').create(),
+	gutil = require('gulp-util');
 
 gulp.task('copy-normalize', function () {
 	return gulp
@@ -15,6 +19,13 @@ gulp.task('build', ['copy-normalize'], function () {
 	return browserify('src/index.js')
 		.bundle()
 		.pipe(source('mm.editor.bundle.js'))
+		.pipe(buffer())
+		.pipe(sourcemaps.init({loadMaps: true}))
+		// .pipe(uglify())
+		.on('error', gutil.log)
+		.pipe(sourcemaps.write('./', {
+			sourceMappingURLPrefix: 'http://localhost:8080/dist/'
+		}))
 		.pipe(gulp.dest('./dist'));
 });
 

@@ -5,7 +5,8 @@ var THREE = require('three'),
 module.exports = function () {
 	var _assets,
 		manager = new THREE.LoadingManager(),
-		loader = new THREE.JSONLoader(manager),
+		textureLoader = new THREE.TextureLoader(),
+		jsonLoader = new THREE.JSONLoader(manager),
 		mesh = {};
 
 	var loadTexture = function (tf) {
@@ -15,9 +16,17 @@ module.exports = function () {
 	};
 
 	var loadMesh = function (name, mf, tf) {
-		loader.load('assets/' + mf + '.json', function (geom) {
-			// TODO: cache previously loaded mesh
-			mesh[name] = new THREE.Mesh(geom, loadTexture('assets/' + tf + '.png'));
+		textureLoader.load('assets/' + tf + '.png', function (texture) {
+			jsonLoader.load('assets/' + mf + '.json', function (geom) {
+				var material = new THREE.MeshBasicMaterial({
+					map: texture
+				});
+				// TODO: cache previously loaded mesh
+				mesh[name] = new THREE.Mesh(geom, material);
+				mesh[name].castShadow = true;
+				mesh[name].receiveShadow = true;
+			});
+
 		});
 	};
 

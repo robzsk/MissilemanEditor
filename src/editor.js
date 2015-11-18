@@ -13,16 +13,11 @@ module.exports = function () {
 		deltaMove = new THREE.Vector2(),
 		scene = new THREE.Scene(),
 		cam = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.2, 1000),
-		dlight = new THREE.DirectionalLight(0xffffff, 1),
-		alight = new THREE.AmbientLight(0xffffff),
+		directionalLight = new THREE.DirectionalLight('#ffffff'),
+		ambientLight = new THREE.AmbientLight(0xffffff),
 		renderer = new THREE.WebGLRenderer(),
 		shifted = false,
 		controlled = false;
-
-	$(document).on('keyup keydown', function (e) {
-		shifted = e.shiftKey;
-		controlled = e.ctrlKey;
-	});
 
 	var setPos = function (e) {
 		dir = vector.set((e.offsetX / window.innerWidth) * 2 - 1, - (e.offsetY / window.innerHeight) * 2 + 1, 0)
@@ -33,16 +28,36 @@ module.exports = function () {
 		pos.y = Math.round(pos.y);
 	};
 
+	$(document).on('keyup keydown', function (e) {
+		shifted = e.shiftKey;
+		controlled = e.ctrlKey;
+	});
+
 	cam.position.z = 10;
 	cam.position.set(5, 5, 10);
 	cam.updateProjectionMatrix();
 
 	scene.add(cam);
-	scene.add(dlight);
-	scene.add(alight);
+	scene.add(ambientLight);
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.shadowMap.enabled = true;
 	$('body').append(renderer.domElement);
+
+	directionalLight.position.set(20, 25, 20);
+	directionalLight.castShadow = true;
+	directionalLight.shadowCameraNear = 2;
+	directionalLight.shadowCameraFar = 200;
+	directionalLight.shadowCameraLeft = -10;
+	directionalLight.shadowCameraRight = 10;
+	directionalLight.shadowCameraTop = 10;
+	directionalLight.shadowCameraBottom = -10;
+	directionalLight.distance = 10;
+	directionalLight.intensity = 0.5;
+	directionalLight.shadowMapHeight = 1024;
+	directionalLight.shadowMapWidth = 1024;
+	directionalLight.shadowDarkness = 0.15;
+	scene.add(directionalLight);
 
 	+function render () {
 		requestAnimationFrame(render);

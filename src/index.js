@@ -46,8 +46,7 @@ $(document).ready(function () {
 
 	$(assets).on('assets.loaded', function () {
 		var cursor = cube.clone(),
-			ed = editor(),
-			n = 10;
+			ed = editor();
 
 		ed.add(cursor);
 
@@ -57,9 +56,7 @@ $(document).ready(function () {
 		});
 
 		$(ed).on('editor.click', function (evt, p) {
-			if (p.x >= 0 && p.x < n) {
-				map.add(p, mode);
-			}
+			map.add(p, mode);
 		});
 
 		$(ed).on('editor.controlclick', function (evt, p) {
@@ -70,11 +67,15 @@ $(document).ready(function () {
 			ed.remove(mesh);
 		});
 
+		$(document).on('keyup', function (e) {
+			if (e.key === 's') {
+				map.save();
+			}
+		});
+
 		$(map).on('map.add', function (evt, mesh) {
 			ed.add(mesh);
 		});
-
-		map.initEmpty(n);
 
 	});
 	assets.load();

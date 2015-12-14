@@ -20,7 +20,6 @@ gulp.task('build', ['copy-normalize'], function () {
 		.bundle()
 		.pipe(source('mm.editor.bundle.js'))
 		.pipe(buffer())
-		.pipe(sourcemaps.init({loadMaps: true}))
 		// .pipe(uglify())
 		.on('error', gutil.log)
 		.pipe(sourcemaps.write('./', {

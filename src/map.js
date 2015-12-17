@@ -7,16 +7,18 @@ var _ = require('underscore'),
 
 var save = function (id, cells, max, spawn) {
 	var x = {max: -999999, min: 999999}, y = {max: -999999, min: 999999}, data = [];
-	var ret = `
-module.exports = function () {
-	return {
-		id: ${id},
-		cells: ${data},
-		max: ${max},
-		spawn: ${spawn}
+	var fn = function (data) {
+		return `
+			module.exports = function () {
+				return {
+					id: ${id},
+					cells: ${data},
+					max: ${max},
+					spawn: ${spawn}
+				};
+			};
+		`;
 	};
-};
-	`;
 
 	_.each(cells, function (v, k) {
 		var tx, ty;
@@ -30,15 +32,17 @@ module.exports = function () {
 	});
 	x.max += Math.abs(x.min);
 	y.max += Math.abs(y.min);
-	console.log(x);
 	_.times(y.max, function (yn) {
 		data.push([]);
 		_.times(x.max, function (xn) {
 			data[yn][xn] = 0;
 		});
 	});
-	_;
-	console.log(JSON.stringify(data, null, '\t'));
+	_.each(cells, function (v, k) {
+		var sp = k.split('_');
+		data[parseInt(sp[0]) - x.min][parseInt(sp[1]) - y.min] = 1;
+	});
+	console.log(fn(JSON.stringify(data)));
 };
 
 module.exports = function () {
@@ -47,7 +51,7 @@ module.exports = function () {
 
 	_map = {
 		save: function () {
-			save(null, data, null, null);
+			save(0, data, 20, JSON.stringify({x: 1.5, y: 27}));
 		},
 
 		add: function (v, t) {

@@ -7,9 +7,7 @@ var THREE = require('three'),
 	map = require('./map'),
 	type = require('./type');
 
-// TODO: move this to a interface module
 $(document).ready(function () {
-	// TODO: write a cursor manager module
 	var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5),
 		material = new THREE.MeshLambertMaterial({
 			color: 0x00ff00

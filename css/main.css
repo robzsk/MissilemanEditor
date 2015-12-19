@@ -25,18 +25,30 @@
 	cursor: pointer;
 	background-size: 40px 40px;
 }
-.solid {
-	background-image: url("../assets/solid.png");
+.wall {
+	background-image: url("../assets/wall.png");
 }
-.destructible {
-	background-image: url("../assets/destructible.png");
+
+.spawn-red {
+	background-image: url("../assets/spawn-red.png");
 }
-.man-only {
-	background-image: url("../assets/manOnly.png");
+
+.spawn-green {
+	background-image: url("../assets/spawn-green.png");
 }
-.missile-only {
-	background-image: url("../assets/missileOnly.png");
+
+.spawn-blue {
+	background-image: url("../assets/spawn-blue.png");
 }
-.target {
-	background-image: url("../assets/target.png");
+
+.target-red {
+	background-image: url("../assets/target-red.png");
+}
+
+.target-green {
+	background-image: url("../assets/target-green.png");
+}
+
+.target-blue {
+	background-image: url("../assets/target-blue.png");
 }

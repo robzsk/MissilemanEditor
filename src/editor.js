@@ -1,6 +1,7 @@
 'use strict';
 var THREE = require('three'),
-	$ = require('jquery');
+	$ = require('jquery'),
+	_ = require('underscore');
 
 module.exports = function () {
 	var _editor,
@@ -101,6 +102,14 @@ module.exports = function () {
 		},
 		remove: function (m) {
 			scene.remove(m);
+		},
+		clear: function () {
+			var children = _.clone(scene.children);
+			_.each(children, function (child) {
+				if (child !== directionalLight && child !== ambientLight && child !== cam) {
+					scene.remove(child);
+				}
+			});
 		}
 	};
 

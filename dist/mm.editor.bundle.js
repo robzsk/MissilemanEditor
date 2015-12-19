@@ -46967,6 +46967,12 @@ module.exports = function () {
 		});
 	};
 
+	var smallCube = function (color) {
+		var cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({ color: color }));
+		cube.scale.set(0.25, 0.5, 0.5);
+		return cube;
+	};
+
 	var loadMesh = function (name, mf, tf) {
 		textureLoader.load('assets/' + tf + '.png', function (texture) {
 			jsonLoader.load('assets/' + mf + '.json', function (geom) {
@@ -46988,36 +46994,48 @@ module.exports = function () {
 
 	_assets = {
 		load: function () {
-			loadMesh('empty', 'empty', 'solid');
-			loadMesh('solid', 'solid', 'solid');
-			loadMesh('destructible', 'solid', 'destructible');
-			loadMesh('manOnly', 'solid', 'manOnly');
-			loadMesh('missileOnly', 'solid', 'missileOnly');
-			loadMesh('target', 'solid', 'target');
+			loadMesh('empty', 'empty', 'wall');
+			loadMesh('wall', 'wall', 'wall');
+
+			loadMesh('target-red', 'wall', 'target-red');
+			loadMesh('target-green', 'wall', 'target-green');
+			loadMesh('target-blue', 'wall', 'target-blue');
+
+			mesh['spawn-red'] = smallCube(0xff0000);
+			mesh['spawn-green'] = smallCube(0x00ff00);
+			mesh['spawn-blue'] = smallCube(0x0000ff);
 		},
 
 		empty: function (n) {
 			return mesh['empty'].clone();
 		},
 
-		solid: function () {
-			return mesh['solid'].clone();
+		wall: function () {
+			return mesh['wall'].clone();
 		},
 
-		destructible: function () {
-			return mesh['destructible'].clone();
+		'spawn-red': function () {
+			return mesh['spawn-red'].clone();
 		},
 
-		manOnly: function () {
-			return mesh['manOnly'].clone();
+		'spawn-green': function () {
+			return mesh['spawn-green'].clone();
 		},
 
-		missileOnly: function () {
-			return mesh['missileOnly'].clone();
+		'spawn-blue': function () {
+			return mesh['spawn-blue'].clone();
 		},
 
-		target: function () {
-			return mesh['target'].clone();
+		'target-red': function () {
+			return mesh['target-red'].clone();
+		},
+
+		'target-green': function () {
+			return mesh['target-green'].clone();
+		},
+
+		'target-blue': function () {
+			return mesh['target-blue'].clone();
 		}
 
 	};
@@ -47029,7 +47047,8 @@ module.exports = function () {
 },{"jquery":1,"three":2}],5:[function(require,module,exports){
 'use strict';
 var THREE = require('three'),
-	$ = require('jquery');
+	$ = require('jquery'),
+	_ = require('underscore');
 
 module.exports = function () {
 	var _editor,
@@ -47130,53 +47149,42 @@ module.exports = function () {
 		},
 		remove: function (m) {
 			scene.remove(m);
+		},
+		clear: function () {
+			var children = _.clone(scene.children);
+			_.each(children, function (child) {
+				if (child !== directionalLight && child !== ambientLight && child !== cam) {
+					scene.remove(child);
+				}
+			});
 		}
 	};
 
 	return _editor;
 };
 
-},{"jquery":1,"three":2}],6:[function(require,module,exports){
+},{"jquery":1,"three":2,"underscore":3}],6:[function(require,module,exports){
 'use strict';
 
 var THREE = require('three'),
 	$ = require('jquery'),
 	assets = require('./assets'),
 	editor = require('./editor'),
-	map = require('./map'),
-	type = require('./type');
+	map = require('./map');
 
-// TODO: move this to a interface module
 $(document).ready(function () {
-	// TODO: write a cursor manager module
+	// TODO: move this to assets
 	var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5),
 		material = new THREE.MeshLambertMaterial({
-			color: 0x00ff00
+			color: 0xffffff
 		}),
 		cube = new THREE.Mesh(geometry, material),
-		mode = type.solid;
+		mode = 'wall';
 
 	$('.item').click(function () {
+		mode = $(this).children().attr('class');
 		$('.item').removeClass('selected');
 		$(this).addClass('selected');
-
-		switch ($(this).index()) {
-			case 1:
-				mode = type.destructible;
-				break;
-			case 2:
-				mode = type.manOnly;
-				break;
-			case 3:
-				mode = type.missileOnly;
-				break;
-			case 4:
-				mode = type.target;
-				break;
-			default:
-				mode = type.solid;
-		}
-
 	}).hover(function () {
 		$(this).addClass('hover');
 	}, function () {
@@ -47209,6 +47217,8 @@ $(document).ready(function () {
 		$(document).on('keyup', function (e) {
 			if (e.key === 's') {
 				map.save();
+			} else if (e.key === 'l') {
+				map.load();
 			}
 		});
 
@@ -47216,11 +47226,15 @@ $(document).ready(function () {
 			ed.add(mesh);
 		});
 
+		$(map).on('map.clear', function () {
+			ed.clear();
+		});
+
 	});
 	assets.load();
 });
 
-},{"./assets":4,"./editor":5,"./map":7,"./type":8,"jquery":1,"three":2}],7:[function(require,module,exports){
+},{"./assets":4,"./editor":5,"./map":7,"jquery":1,"three":2}],7:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore'),
@@ -47228,75 +47242,147 @@ var _ = require('underscore'),
 	assets = require('./assets'),
 	type = require('./type');
 
-var save = function (id, cells, max, spawn) {
-	var x = {max: -999999, min: 999999}, y = {max: -999999, min: 999999}, data = [];
-	var fn = function (data) {
-		return `
-			module.exports = function () {
-				return {
-					id: ${id},
-					cells: ${data},
-					max: ${max},
-					spawn: ${spawn}
-				};
-			};
-		`;
-	};
+var serializeType = function (t) {
+	switch (t) {
+		case type.empty:
+			return 0;
+		case type.wall:
+			return 1;
+		default:
+			return 0;
+	}
+};
 
-	_.each(cells, function (v, k) {
-		var tx, ty;
-		var sp = k.split('_');
-		tx = parseInt(sp[1]);
-		ty = parseInt(sp[0]);
-		x.min = Math.min(tx, x.min);
-		x.max = Math.max(tx, x.max);
-		y.min = Math.min(ty, y.min);
-		y.max = Math.max(ty, y.max);
-	});
-	x.max += Math.abs(x.min);
-	y.max += Math.abs(y.min);
-	_.times(y.max, function (yn) {
-		data.push([]);
-		_.times(x.max, function (xn) {
-			data[yn][xn] = 0;
+var save = function (id, data, max) {
+	var output = {
+		cells: []
+	};
+	_.each(data, function (row, y) {
+		output.cells.push([]);
+		_.each(row, function (cell, x) {
+			var split, t, f;
+			if (cell.type === type.wall) {
+				output.cells[output.cells.length - 1].push(1);
+			} else {
+				output.cells[output.cells.length - 1].push(0);
+			}
+			if (cell.type !== type.wall && cell.type !== type.empty) {
+				split = cell.type.split('-');
+				t = split[0];
+				f = split[1];
+				output[t] = output[t] || {};
+				output[t][f] = {x: x, y: y};
+			}
 		});
 	});
-	_.each(cells, function (v, k) {
-		var sp = k.split('_');
-		data[parseInt(sp[0]) - x.min][parseInt(sp[1]) - y.min] = 1;
-	});
-	console.log(fn(JSON.stringify(data)));
+	window.prompt('Copy to clipboard: Ctrl+C, Enter', JSON.stringify(output));
 };
 
 module.exports = function () {
 	var _map,
-		data = {};
+		data = [];
+
+	var remove = function (cell) {
+		var x = cell.mesh.position.x, y = cell.mesh.position.y;
+		$(_map).trigger('map.remove', cell.mesh);
+		cell.type = type.empty;
+		cell.mesh = assets[type.empty]();
+		cell.mesh.position.set(x, y, 0);
+		$(_map).trigger('map.add', cell.mesh);
+	};
 
 	_map = {
 		save: function () {
 			save(0, data, 20, JSON.stringify({x: 1.5, y: 27}));
 		},
 
+		load: function () {
+			var n = window.prompt('Enter map as JSON:', '{"cells":[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,1],[0,0,0,0,0,0,1]],"target":{"blue":{"x":0,"y":4},"green":{"x":1,"y":4},"red":{"x":2,"y":4}},"spawn":{"blue":{"x":0,"y":5},"green":{"x":1,"y":5},"red":{"x":2,"y":5}}}');
+			var loaded = JSON.parse(n);
+			// assumes all is good
+			$(_map).trigger('map.clear');
+			data = [];
+			_.each(loaded.cells, function (row, y) {
+				data.push([]);
+				_.each(row, function (cell, x) {
+					var t = cell === 1 ? type.wall : type.empty,
+						mesh = assets[t]();
+					mesh.position.set(x, y, 0);
+					data[y].push({
+						type: t, mesh: mesh
+					});
+					$(_map).trigger('map.add', mesh);
+				});
+			});
+			_.each(loaded, function (v, k) {
+				if (k !== 'cells') {
+					_.each(v, function (val, key) {
+						_map.add({ x: val.x, y: val.y }, k + '-' + key);
+					});
+				}
+			});
+		},
+
 		add: function (v, t) {
-			var d = data[v.y + '_' + v.x] || {};
-			d.type = t;
-			if (d.mesh) {
-				$(_map).trigger('map.remove', d.mesh);
+			var cell, mx;
+
+			// invalid placement
+			if (v.x < 0 || v.y < 0) {
+				console.log('map.js: placement was less than zero');
+				return;
 			}
 
-			d.mesh = assets[t]();
-			d.mesh.position.set(v.x, v.y, 0);
-			$(_map).trigger('map.add', d.mesh);
+			// the map has become larger?
+			if (data.length <= v.y || data[0].length <= v.x) {
+				while(data.length <= v.y){
+					data.push([]);
+				}
+				mx = Math.max(data[0].length - 1, v.x);
+				_.each(data, function (row, y) {
+					var mesh;
+					while(row.length <= mx){
+						mesh = assets[type.empty]();
+						mesh.position.set(row.length, y, 0);
+						row.push({
+							type: type.empty,
+							mesh: mesh
+						});
+						$(_map).trigger('map.add', mesh);
+					}
+				});
+			}
 
-			data[v.y + '_' + v.x] = d;
+			// there can be only one type of all but walls
+			if (t !== 'wall') {
+				_.each(data, function (row) {
+					_.each(row, function (cell) {
+						if (cell.type === t) {
+							remove(cell);
+						}
+					});
+				});
+			}
+
+			// add the requested type
+			cell = data[v.y][v.x];
+			$(_map).trigger('map.remove', cell.mesh);
+			cell.type = t;
+			cell.mesh = assets[t]();
+			cell.mesh.position.set(v.x, v.y, 0);
+			$(_map).trigger('map.add', cell.mesh);
 		},
 
 		remove: function (v) {
-			var d = data[v.y + '_' + v.x] || {};
-			if (d.mesh) {
-				$(_map).trigger('map.remove', d.mesh);
-				delete data[v.y + '_' + v.x];
+			var cell;
+
+			if (v.x < 0 || v.y < 0) {
+				console.log('map.js: remove was less than zero');
+				return;
 			}
+			if (v.x >= data[0].length || v.y >= data.length) {
+				return;
+			}
+			remove(data[v.y][v.x]);
 		}
 
 	};
@@ -47306,15 +47392,19 @@ module.exports = function () {
 },{"./assets":4,"./type":8,"jquery":1,"underscore":3}],8:[function(require,module,exports){
 'use strict';
 
-module.exports = function () {
-	return {
-		empty: 'empty',
-		solid: 'solid',
-		destructible: 'destructible',
-		manOnly: 'manOnly',
-		missileOnly: 'missileOnly',
-		target: 'target'
-	};
-}();
+var types = {
+	'spawn-red': 'spawn-red',
+	'spawn-green': 'spawn-green',
+	'spawn-blue': 'spawn-blue',
+
+	'target-red': 'target-red',
+	'target-green': 'target-green',
+	'target-blue': 'target-blue',
+
+	empty: 'empty',
+	wall: 'wall'
+};
+
+module.exports = types;
 
 },{}]},{},[6]);

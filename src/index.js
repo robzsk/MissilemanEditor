@@ -4,38 +4,21 @@ var THREE = require('three'),
 	$ = require('jquery'),
 	assets = require('./assets'),
 	editor = require('./editor'),
-	map = require('./map'),
-	type = require('./type');
+	map = require('./map');
 
 $(document).ready(function () {
+	// TODO: move this to assets
 	var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5),
 		material = new THREE.MeshLambertMaterial({
-			color: 0x00ff00
+			color: 0xffffff
 		}),
 		cube = new THREE.Mesh(geometry, material),
-		mode = type.solid;
+		mode = 'wall';
 
 	$('.item').click(function () {
+		mode = $(this).children().attr('class');
 		$('.item').removeClass('selected');
 		$(this).addClass('selected');
-
-		switch ($(this).index()) {
-			case 1:
-				mode = type.destructible;
-				break;
-			case 2:
-				mode = type.manOnly;
-				break;
-			case 3:
-				mode = type.missileOnly;
-				break;
-			case 4:
-				mode = type.target;
-				break;
-			default:
-				mode = type.solid;
-		}
-
 	}).hover(function () {
 		$(this).addClass('hover');
 	}, function () {
@@ -68,11 +51,17 @@ $(document).ready(function () {
 		$(document).on('keyup', function (e) {
 			if (e.key === 's') {
 				map.save();
+			} else if (e.key === 'l') {
+				map.load();
 			}
 		});
 
 		$(map).on('map.add', function (evt, mesh) {
 			ed.add(mesh);
+		});
+
+		$(map).on('map.clear', function () {
+			ed.clear();
 		});
 
 	});

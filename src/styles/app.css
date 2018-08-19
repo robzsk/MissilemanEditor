@@ -1,0 +1,132 @@
+@font-face {
+  font-family: default-font;
+  src: url('../../font/Heytext.ttf') format('truetype');
+  font-weight: normal;
+}
+
+body {
+  margin: 0px;
+  overflow: hidden;
+  font-family: default-font;
+  font-size: 50px;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+     -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+          user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+}
+
+.grid {
+  padding: 0px;
+  marging: 0px;
+  display: inline-block;
+}
+
+.row {
+  /* border-top: 1px solid black; */
+}
+
+.cell {
+  /* border-right: 1px solid black; */
+  display: table-cell;
+  width: 20px;
+  height: 20px;
+  padding: 0px;
+}
+
+.paletteDock {
+  width: 120px;
+  float: left;
+  margin-right: 10px;
+}
+
+.pen {
+  float: left;
+  width: 100%;
+  margin: 3px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.pen:hover {
+  background-color: grey;
+}
+
+.penText {
+  float: left;
+  margin-left: 10px;
+  line-height: 5px;
+}
+
+.color {
+  float: left;
+  height: 20px;
+  width: 20px;
+}
+
+.adjpen {
+  float: left;
+  width: 100%;
+  margin: 3px;
+  padding: 3px;
+}
+
+.size {
+  float: left;
+  height: 30px;
+  width: 28px;
+  line-height: 10px;
+  padding: 4px 0 0 4px;
+  overflow: hidden;
+  font-size: 78px;
+}
+
+.adjcontrols {
+  float: left;
+  width: 8px;
+}
+
+.adjText {
+  float: left;
+  margin-left: 16px;
+  line-height: 22px;
+}
+
+.adjuster {
+  height: 15px;
+  width: 15px;
+  font-size: 32px;
+  line-height: 6px;
+  padding: 3px 0 0 4px;
+  cursor: pointer;
+}
+
+.adjuster:hover {
+  background-color: grey;
+}
+
+.wall {
+  background-color: grey;
+}
+
+.empty {
+  background-color: #fff;
+}
+
+.missile {
+  background-color: #f00;
+}
+
+.target {
+  background-color: #0f0;
+}
+
+.player {
+  background-color: #00f;
+}
+
+.enemy {
+  background-color: #0ff;
+}

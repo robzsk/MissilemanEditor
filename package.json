@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robzsk/mm.editor.git"
+    "url": "git+https://github.com/robzsk/MissilemanEditor.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/robzsk/mm.editor/issues"
+    "url": "https://github.com/robzsk/MissilemanEditor/issues"
   },
-  "homepage": "https://github.com/robzsk/mm.editor#readme",
+  "homepage": "https://github.com/robzsk/MissilemanEditor#readme",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",

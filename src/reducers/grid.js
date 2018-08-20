@@ -71,12 +71,30 @@ const decreaseWidth = grid => {
 };
 
 const draw = ({ x, y, pen }, grid) => {
-  // if no change
-  if (grid[y][x] === pen.color) {
+  const width = grid[0].length;
+  const height = grid.length;
+
+  // out of bounds or no change
+  // bail early
+  if (width <= x || height <= y || x < 0 || y < 0 || grid[y][x] === pen.color) {
     return grid;
   }
-  // modify
+
+  // let's modify
   const newGrid = clone(grid);
+  const { color } = pen;
+
+  // remove current player/enemy spawns
+  //i.e. there can be only one!
+  if (color === PENS.PLAYER || color === PENS.ENEMY) {
+    newGrid.forEach((row, ry) => {
+      row.forEach((cell, rx) => {
+        if (cell === color) {
+          newGrid[ry][rx] = PENS.EMPTY;
+        }
+      })
+    })
+  }
   newGrid[y][x] = pen.color;
   return newGrid;
 };

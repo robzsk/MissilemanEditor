@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Size from './size';
 import Pen from './pen';
 import Save from './save';
+import Warnings from './Warnings';
 import PENS from './../../pens';
 
 class Palette extends Component {
@@ -21,6 +22,7 @@ class Palette extends Component {
       pens.map((p, i) => (<Pen key={i} name={p.toLowerCase()} number={PENS[p]} selected={PENS[p] === this.props.state.pen.color} />))
     }
     <Save data={this.props.state.grid}/>
+    <Warnings data={this.props.state.grid}/>
     </div>)
   }
 }

@@ -8,9 +8,16 @@ class Save extends Component {
     document.execCommand('copy');
   }
 
+  flip(data) {
+    return data.reduce((a, c) => {
+      a.unshift(c);
+      return a;
+    }, []);
+  }
+
   exportData() {
     const { data } = this.props;
-    return `[${data.reduce((a, c) => {
+    return `[${this.flip(data).reduce((a, c) => {
       return `${a}\n\t[${c.toString()}],`;
     }, '')}\n]`;
   }

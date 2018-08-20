@@ -26,7 +26,7 @@ class Save extends Component {
     return (
       <div className="saveBtn" onClick={this.onClick.bind(this)}>
       <textarea ref="textToCopy" className="textToCopy" defaultValue={this.exportData()}></textarea>
-        SAVE
+        COPY
       </div>
     )
   }

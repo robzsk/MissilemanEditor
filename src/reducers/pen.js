@@ -5,10 +5,17 @@ const initial = {
 };
 
 const pen = (state, action) => {
-  if (action.type === NEW_PEN) {
-    return action.pen;
+  // bail early
+  if (state === undefined) {
+    return initial;
   }
-  return state || initial;
+
+  switch (action.type) {
+    case NEW_PEN:
+      return action.pen;
+    default:
+      return state;
+  }
 };
 
 export default pen;

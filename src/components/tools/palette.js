@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Size from './size';
 import Pen from './pen';
+import Save from './save';
 import PENS from './../../pens';
 
 class Palette extends Component {
@@ -17,8 +18,10 @@ class Palette extends Component {
     <Size tag={'W'} name={'width'} value={this.getWidth()}/>
     <Size tag={'H'} name={'height'} value={this.getHeight()}/>
     {
-      pens.map((p, i) => (<Pen key={i} name={p.toLowerCase()} number={PENS[p]} />))
-    }</div>)
+      pens.map((p, i) => (<Pen key={i} name={p.toLowerCase()} number={PENS[p]} selected={PENS[p] === this.props.state.pen.color} />))
+    }
+    <Save data={this.props.state.grid}/>
+    </div>)
   }
 }
 

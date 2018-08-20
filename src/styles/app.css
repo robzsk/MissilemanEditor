@@ -5,7 +5,7 @@
 }
 
 body {
-  margin: 0px;
+  /* margin: 0px; */
   overflow: hidden;
   font-family: default-font;
   font-size: 50px;
@@ -34,6 +34,9 @@ body {
   width: 20px;
   height: 20px;
   padding: 0px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 
 .paletteDock {
@@ -51,7 +54,11 @@ body {
 }
 
 .pen:hover {
-  background-color: grey;
+  background-color: #a0a0a0;
+}
+
+.penSelected {
+  background-color: #e0e0e0;
 }
 
 .penText {
@@ -64,6 +71,9 @@ body {
   float: left;
   height: 20px;
   width: 20px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 
 .adjpen {
@@ -116,17 +126,38 @@ body {
 }
 
 .missile {
-  background-color: #f00;
+  background-color: #63a15d;
 }
 
 .target {
-  background-color: #0f0;
+  background-color: #3774c4;
 }
 
 .player {
-  background-color: #00f;
+  border: #3774c4 dotted 2px;
 }
 
 .enemy {
-  background-color: #0ff;
+  background-color: #ba5746;
+}
+
+.saveBtn {
+  float: left;
+  width: 100%;
+  height: 30px;
+  text-align: center;
+  cursor: pointer;
+  border: solid #e0e0e0 5px;
+  line-height: 20px;
+}
+
+.saveBtn:hover {
+  background-color: #e0e0e0;
+  border: grey 5px solid;
+}
+
+.textToCopy {
+  position: absolute;
+  top: -999px;
+  left: -999px;
 }

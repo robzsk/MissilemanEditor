@@ -6,7 +6,7 @@
   "scripts": {
     "electron": "electron .",
     "webpack": "webpack --mode development --watch",
-    "start": "npm-run-all -p -r electron webpack"
+    "start": "webpack --mode development && npm-run-all -p -r electron webpack"
   },
   "repository": {
     "type": "git",
